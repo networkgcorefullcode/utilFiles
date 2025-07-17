@@ -1,0 +1,116 @@
+networks:
+  net5g:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+services:
+  amf:
+    build: ./amf
+    container_name: amf
+    command: ["/usr/local/bin/amf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/amfcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.2
+
+  ausf:
+    build: ./ausf
+    container_name: ausf
+    command: ["/usr/local/bin/ausf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/ausfcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.3
+
+  nrf:
+    build: ./nrf
+    container_name: nrf
+    command: ["/usr/local/bin/nrf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/nrfcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.4
+
+  nssf:
+    build: ./nssf
+    container_name: nssf
+    command: ["/usr/local/bin/nssf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/test_nssf_config.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.5
+
+  pcf:
+    build: ./pcf
+    container_name: pcf
+    command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/pcfcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.6
+
+  smf:
+    build: ./smf
+    container_name: smf
+    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.7
+
+  udm:
+    build: ./udm
+    container_name: udm
+    command: ["/usr/local/bin/udm", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/udmcfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.8
+
+  udr:
+    build: ./udr
+    container_name: udr
+    command: ["/usr/local/bin/udr", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/udr_config.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.9
+
+  # upf:
+  #   build: ./upf
+  #   container_name: upf
+  #   volumes:
+  #     - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
+  #   networks:
+  #     net5g:
+  #       ipv4_address: 172.28.0.10
+
+  nettools:
+    image: nicolaka/netshoot:latest
+    container_name: nettools
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.20
+    # Herramientas de red para testeo interno
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.30
