@@ -86,6 +86,16 @@ services:
       net5g:
         ipv4_address: 172.28.0.9
 
+  webui:
+    build: ./webconsole
+    container_name: webui
+    command: ["/usr/local/bin/webconsole", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ./configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.11
+
   # upf:
   #   build: ./upf
   #   container_name: upf
