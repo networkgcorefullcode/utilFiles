@@ -1906,9 +1906,7 @@
       "nrA2x": false
     },
     "rangingSlPosSupportInd": false,
-    "urspEpsSupport": false,
-    "vplmnRuleSupport": false,
-    "urspEnforceSupport": false
+    "urspEpsSupport": false
   },
   "pcfInfoList": {
     "additionalProp1": {
