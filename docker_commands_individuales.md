@@ -17,81 +17,99 @@ docker network create --subnet=172.28.0.0/16 net5g
 ## Servicios
 
 ### amf
+
 ```sh
 docker run -d --name amf \
   --network net5g --ip 172.28.0.2 \
+  -p 8001:8000 \
   -v $(pwd)/configs_files/docker_compose_config/amfcfg.yaml:/app/config.yaml \
   amf \
   /usr/local/bin/amf --cfg /app/config.yaml
 ```
 
 ### ausf
+
 ```sh
 docker run -d --name ausf \
   --network net5g --ip 172.28.0.3 \
+  -p 8002:8000 \
   -v $(pwd)/configs_files/docker_compose_config/ausfcfg.yaml:/app/config.yaml \
   ausf \
   /usr/local/bin/ausf --cfg /app/config.yaml
 ```
 
 ### nrf
+
 ```sh
 docker run -d --name nrf \
   --network net5g --ip 172.28.0.4 \
+  -p 8003:8000 \
   -v $(pwd)/configs_files/docker_compose_config/nrfcfg.yaml:/app/config.yaml \
   nrf \
   /usr/local/bin/nrf --cfg /app/config.yaml
 ```
 
 ### nssf
+
 ```sh
 docker run -d --name nssf \
   --network net5g --ip 172.28.0.5 \
+  -p 8004:8000 \
   -v $(pwd)/configs_files/docker_compose_config/test_nssf_config.yaml:/app/config.yaml \
   nssf \
   /usr/local/bin/nssf --cfg /app/config.yaml
 ```
 
 ### pcf
+
 ```sh
 docker run -d --name pcf \
   --network net5g --ip 172.28.0.6 \
+  -p 8005:8000 \
   -v $(pwd)/configs_files/docker_compose_config/pcfcfg.yaml:/app/config.yaml \
   pcf \
   /usr/local/bin/pcf --cfg /app/config.yaml
 ```
 
 ### smf
+
 ```sh
 docker run -d --name smf \
   --network net5g --ip 172.28.0.7 \
+  -p 8006:8000 \
   -v $(pwd)/configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml \
   smf \
   /usr/local/bin/smf --cfg /app/config.yaml
 ```
 
 ### udm
+
 ```sh
 docker run -d --name udm \
   --network net5g --ip 172.28.0.8 \
+  -p 8007:8000 \
   -v $(pwd)/configs_files/docker_compose_config/udmcfg.yaml:/app/config.yaml \
   udm \
   /usr/local/bin/udm --cfg /app/config.yaml
 ```
 
 ### udr
+
 ```sh
 docker run -d --name udr \
   --network net5g --ip 172.28.0.9 \
+  -p 8008:8000 \
   -v $(pwd)/configs_files/docker_compose_config/udr_config.yaml:/app/config.yaml \
   udr \
   /usr/local/bin/udr --cfg /app/config.yaml
 ```
 
 ### webui
+
 ```sh
 docker run -d --name webui \
   --network net5g --ip 172.28.0.11 \
+  -p 8009:8000 \
   -v $(pwd)/configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml \
   webconsole \
   /usr/local/bin/webconsole --cfg /app/config.yaml
@@ -105,6 +123,7 @@ docker run -d --name nettools \
 ```
 
 ### mongodb
+
 ```sh
 docker run -d --name mongodb \
   --network net5g --ip 172.28.0.30 \
