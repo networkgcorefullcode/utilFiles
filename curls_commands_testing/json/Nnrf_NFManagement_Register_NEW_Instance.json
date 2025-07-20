@@ -1964,9 +1964,7 @@
         "nrA2x": false
       },
       "rangingSlPosSupportInd": false,
-      "urspEpsSupport": false,
-      "vplmnRuleSupport": false,
-      "urspEnforceSupport": false
+      "urspEpsSupport": false
     }
   },
   "bsfInfo": {
@@ -4070,9 +4068,7 @@
           "nrA2x": false
         },
         "rangingSlPosSupportInd": false,
-        "urspEpsSupport": false,
-        "vplmnRuleSupport": false,
-        "urspEnforceSupport": false
+        "urspEpsSupport": false
       }
     },
     "servedPcfInfoList": {
@@ -4132,9 +4128,7 @@
             "nrA2x": false
           },
           "rangingSlPosSupportInd": false,
-          "urspEpsSupport": false,
-          "vplmnRuleSupport": false,
-          "urspEnforceSupport": false
+          "urspEpsSupport": false
         }
       }
     },
