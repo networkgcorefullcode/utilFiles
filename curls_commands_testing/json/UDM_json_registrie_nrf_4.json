@@ -1,0 +1,27 @@
+{
+    "nfInstanceId":"b70d40d6-4d44-41f0-811e-73fb416abee0",
+    "nfType":"UDR",
+    "nfStatus":"REGISTERED",
+    "ipv4Addresses":["172.22.0.14"],
+    "allowedNfTypes":["SCP","PCF","UDM"],
+    "priority":0,
+    "capacity":100,
+    "load":0,
+    "nfServiceList":
+        {
+            "b70d722c-4d44-41f0-811e-73fb416abee0":
+                {
+                    "serviceInstanceId":"b70d722c-4d44-41f0-811e-73fb416abee0",
+                    "serviceName":"nudr-dr",
+                    "versions":[{"apiVersionInUri":"v1","apiFullVersion":"1.0.0"}],
+                    "scheme":"http",
+                    "nfServiceStatus":"REGISTERED",
+                    "ipEndPoints":[{"ipv4Address":"172.22.0.14","port":7777}],
+                    "allowedNfTypes":["PCF","UDM"],
+                    "priority":0,
+                    "capacity":100,
+                    "load":0
+                }
+        },
+    "nfProfileChangesSupportInd":true
+}

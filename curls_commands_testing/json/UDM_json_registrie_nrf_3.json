@@ -1,0 +1,10 @@
+{
+    "nfStatusNotificationUri":"http://172.22.0.11:7777/nnrf-nfm/v1/nf-status-notify",
+    "reqNfInstanceId":"b0ae28fe-4d44-41f0-a78e-93eea02ac9f5",
+    "subscrCond":
+        {
+            "nfType":"SEPP"
+        },
+    "reqNfType":"AUSF",
+    "requesterFeatures":"1"
+}

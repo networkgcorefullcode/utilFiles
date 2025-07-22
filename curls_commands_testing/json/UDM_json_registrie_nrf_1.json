@@ -1,0 +1,26 @@
+
+{
+    "nfInstanceId":"b0ae28fe-4d44-41f0-a78e-93eea02ac9f5",
+    "nfType":"AUSF",
+    "nfStatus":"REGISTERED",
+    "ipv4Addresses":["172.22.0.11"],
+    "allowedNfTypes":["SCP","AMF"],
+    "priority":0,
+    "capacity":100,
+    "load":0,
+    "nfServiceList":
+        {
+            "b0ae2dfe-4d44-41f0-a78e-93eea02ac9f5": {
+                "serviceInstanceId":"b0ae2dfe-4d44-41f0-a78e-93eea02ac9f5",
+                "serviceName":"nausf-auth",
+                "versions":[{"apiVersionInUri":"v1","apiFullVersion":"1.0.0"}],
+                "scheme":"http",
+                "nfServiceStatus":"REGISTERED",
+                "ipEndPoints":[{"ipv4Address":"172.22.0.11","port":7777}],
+                "allowedNfTypes":["AMF"],
+                "priority":0,
+                "capacity":100,
+                "load":0}
+        },
+    "nfProfileChangesSupportInd":true
+}

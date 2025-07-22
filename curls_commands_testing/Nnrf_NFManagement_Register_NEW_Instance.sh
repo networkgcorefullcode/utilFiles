@@ -12,6 +12,6 @@ URL_BASE=${1:-"https://example.com/nnrf-nfm/v1/nf-instances"}
 NF_INSTANCE_ID=${2:-"3fa85f64-5717-4562-b3fc-2c963f66afa6"}
 JSON_PATH="$(dirname "$0")/json/Nnrf_NFManagement_Register_NEW_Instance.json"
 
-curl -k -X PUT "${URL_BASE}/:${NF_INSTANCE_ID}" \
+curl -k -X PUT "${URL_BASE}/${NF_INSTANCE_ID}" \
   -H "Content-Type: application/json" \
   --data-binary "@${JSON_PATH}"
