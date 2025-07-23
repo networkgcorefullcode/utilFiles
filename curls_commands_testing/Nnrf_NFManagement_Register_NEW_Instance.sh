@@ -15,3 +15,7 @@ JSON_PATH="$(dirname "$0")/json/Nnrf_NFManagement_Register_NEW_Instance.json"
 curl -k -X PUT "${URL_BASE}/${NF_INSTANCE_ID}" \
   -H "Content-Type: application/json" \
   --data-binary "@${JSON_PATH}"
+
+# curl -k -X <put here the operation> "<put here the URL>" \
+# -H "Content-Type: application/json" \
+# --data-binary "the json file to be used"
