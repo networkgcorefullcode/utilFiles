@@ -138,7 +138,6 @@ echo "  ✓ genérico (tls.crt): Incluye todos los servicios individuales y wild
 
 echo ""
 echo "🚀 Los certificados ahora incluyen los nombres DNS específicos correctos"
-echo "   El error 'certificate is valid for localhost, *.net5g, *.docker.internal, not webui' debería resolverse"
 
 # Establecer permisos apropiados
 chmod 644 "$CERTS_DIR"/*.crt
