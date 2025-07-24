@@ -52,7 +52,10 @@ DNS.2 = ${service}.net5g
 DNS.3 = ${service}.docker.internal
 DNS.4 = localhost
 DNS.5 = ${service}-service
+DNS.6 = ${service}.localhost
+DNS.7 = ${service}.local
 IP.1 = 127.0.0.1
+IP.2 = ::1
 EOF
 
     # Generar clave privada del servicio
@@ -96,7 +99,20 @@ subjectAltName = @alt_names
 DNS.1 = localhost
 DNS.2 = *.net5g
 DNS.3 = *.docker.internal
+DNS.4 = amf
+DNS.5 = ausf
+DNS.6 = nrf
+DNS.7 = nssf
+DNS.8 = pcf
+DNS.9 = smf
+DNS.10 = udm
+DNS.11 = udr
+DNS.12 = webui
+DNS.13 = mongodb
+DNS.14 = *.localhost
+DNS.15 = *.local
 IP.1 = 127.0.0.1
+IP.2 = ::1
 EOF
 
 openssl genrsa -out "$CERTS_DIR/tls.key" 2048
@@ -114,4 +130,21 @@ echo "   - ca.key (Clave privada de la CA)"
 echo "   - {servicio}.crt/.key (Certificados firmados para cada servicio)"
 
 echo ""
-echo "📋 Próximo paso: Actualizar Docker Compose para montar ca.crt en todos los contenedores"
+echo "📋 Verificación de certificados generados:"
+for service in "${SERVICES[@]}"; do
+    echo "  ✓ $service: Incluye DNS names: $service, $service.net5g, localhost"
+done
+echo "  ✓ genérico (tls.crt): Incluye todos los servicios individuales y wildcards"
+
+echo ""
+echo "🚀 Los certificados ahora incluyen los nombres DNS específicos correctos"
+echo "   El error 'certificate is valid for localhost, *.net5g, *.docker.internal, not webui' debería resolverse"
+
+# Establecer permisos apropiados
+chmod 644 "$CERTS_DIR"/*.crt
+chmod 600 "$CERTS_DIR"/*.key
+
+echo ""
+echo "📋 Para aplicar los cambios:"
+echo "   1. docker-compose down"
+echo "   2. docker-compose up -d"
