@@ -1,9 +1,6 @@
 networks:
   net5g:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
 
 services:
   amf:
@@ -16,8 +13,7 @@ services:
     ports:
       - "8001:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.2
+      - net5g
 
   ausf:
     build: ./ausf
@@ -29,8 +25,7 @@ services:
     ports:
       - "8002:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.3
+      - net5g
 
   nrf:
     build: ./nrf
@@ -42,8 +37,7 @@ services:
     ports:
       - "8003:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.4
+      - net5g
 
   nssf:
     build: ./nssf
@@ -55,8 +49,7 @@ services:
     ports:
       - "8004:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.5
+      - net5g
 
   pcf:
     build: ./pcf
@@ -68,8 +61,7 @@ services:
     ports:
       - "8005:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.6
+      - net5g
 
   smf:
     build: ./smf
@@ -81,8 +73,7 @@ services:
     ports:
       - "8006:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.7
+      - net5g
 
   udm:
     build: ./udm
@@ -94,8 +85,7 @@ services:
     ports:
       - "8007:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.8
+      - net5g
 
   udr:
     build: ./udr
@@ -107,8 +97,7 @@ services:
     ports:
       - "8008:8000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.9
+      - net5g
 
   webui:
     build: ./webconsole
@@ -120,8 +109,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      net5g:
-        ipv4_address: 172.28.0.11
+      - net5g
 
   # upf:
   #   build: ./upf
@@ -130,15 +118,13 @@ services:
   #     - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
   #     - ./certs:/var/run/certs
   #   networks:
-  #     net5g:
-  #       ipv4_address: 172.28.0.10
+  #     - net5g
 
   nettools:
     image: nicolaka/netshoot:latest
     container_name: nettools
     networks:
-      net5g:
-        ipv4_address: 172.28.0.20
+      - net5g
     # Herramientas de red para testeo interno
 
   mongodb:
@@ -155,8 +141,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE: admin
     networks:
-      net5g:
-        ipv4_address: 172.28.0.30
+      - net5g
 
   mongo-setup:
     image: mongo:latest
@@ -167,5 +152,4 @@ services:
       - ./mongo-setup.sh:/mongo-setup.sh
     entrypoint: ["bash", "/mongo-setup.sh"]
     networks:
-      net5g:
-        ipv4_address: 172.28.0.31
+      - net5g
