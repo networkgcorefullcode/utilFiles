@@ -145,11 +145,27 @@ services:
     image: mongo:latest
     container_name: mongodb
     restart: unless-stopped
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
       - ./mongo_data:/data/db
       - ./certs:/var/run/certs
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      MONGO_INITDB_DATABASE: admin
     networks:
       net5g:
         ipv4_address: 172.28.0.30
+
+  mongo-setup:
+    image: mongo:latest
+    container_name: mongo-setup
+    depends_on:
+      - mongodb
+    volumes:
+      - ./mongo-setup.sh:/mongo-setup.sh
+    entrypoint: ["bash", "/mongo-setup.sh"]
+    networks:
+      net5g:
+        ipv4_address: 172.28.0.31
