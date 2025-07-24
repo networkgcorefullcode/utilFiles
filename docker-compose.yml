@@ -118,7 +118,7 @@ services:
       - ./configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml
       - ./certs:/var/run/certs
     ports:
-      - "8009:8000"
+      - "5000:5000"
     networks:
       net5g:
         ipv4_address: 172.28.0.11
