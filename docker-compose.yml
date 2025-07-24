@@ -13,6 +13,7 @@ services:
       - ./certs/amf.key:/var/run/certs/amf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8001:8000"
     networks:
@@ -28,6 +29,7 @@ services:
       - ./certs/ausf.key:/var/run/certs/ausf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8002:8000"
     networks:
@@ -43,6 +45,7 @@ services:
       - ./certs/nrf.key:/var/run/certs/nrf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8003:8000"
     networks:
@@ -58,6 +61,7 @@ services:
       - ./certs/nssf.key:/var/run/certs/nssf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8004:8000"
     networks:
@@ -73,6 +77,7 @@ services:
       - ./certs/pcf.key:/var/run/certs/pcf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8005:8000"
     networks:
@@ -88,6 +93,7 @@ services:
       - ./certs/smf.key:/var/run/certs/smf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8006:8000"
     networks:
@@ -103,6 +109,7 @@ services:
       - ./certs/udm.key:/var/run/certs/udm.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8007:8000"
     networks:
@@ -118,6 +125,7 @@ services:
       - ./certs/udr.key:/var/run/certs/udr.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8008:8000"
     networks:
@@ -133,6 +141,7 @@ services:
       - ./certs/webui.key:/var/run/certs/webui.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "5000:5000"
     networks:
@@ -167,6 +176,7 @@ services:
       - ./certs/mongodb.key:/var/run/certs/mongodb.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     environment:
       MONGO_INITDB_DATABASE: admin
