@@ -123,15 +123,15 @@ services:
       net5g:
         ipv4_address: 172.28.0.11
 
-  upf:
-    build: ./upf
-    container_name: upf
-    volumes:
-      - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
-      - ./certs:/var/run/certs
-    networks:
-      net5g:
-        ipv4_address: 172.28.0.10
+  # upf:
+  #   build: ./upf
+  #   container_name: upf
+  #   volumes:
+  #     - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
+  #     - ./certs:/var/run/certs
+  #   networks:
+  #     net5g:
+  #       ipv4_address: 172.28.0.10
 
   nettools:
     image: nicolaka/netshoot:latest
