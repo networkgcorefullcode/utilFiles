@@ -1,24 +1,32 @@
 #!/bin/bash
 
-# Script para generar certificados TLS autofirmados para servicios 5G en contenedores Docker
-# Cada servicio tendrá su propio certificado con los nombres DNS correctos en SAN
-
+# Script para generar CA propia y certificados firmados para servicios 5G
 CERTS_DIR="./certs"
 VALIDITY_DAYS=365
+CA_VALIDITY_DAYS=3650
 
 # Lista de servicios 5G
 SERVICES=("amf" "ausf" "nrf" "nssf" "pcf" "smf" "udm" "udr" "webui" "mongodb")
 
-echo "🔐 Generando certificados TLS con SAN correcto para servicios 5G en contenedores..."
+echo "🔐 Generando CA propia y certificados firmados para servicios 5G..."
 
 # Crear directorio de certificados si no existe
 mkdir -p "$CERTS_DIR"
 
-# Generar certificados para cada servicio
+# 1. Generar clave privada de la CA
+echo "📋 Generando clave privada de la CA..."
+openssl genrsa -out "$CERTS_DIR/ca.key" 4096
+
+# 2. Generar certificado de la CA
+echo "📋 Generando certificado de la CA..."
+openssl req -new -x509 -days $CA_VALIDITY_DAYS -key "$CERTS_DIR/ca.key" -out "$CERTS_DIR/ca.crt" \
+    -subj "/CN=5G Core CA/O=5G Core Network/OU=Certificate Authority/C=US"
+
+# 3. Generar certificados para cada servicio firmados por la CA
 for service in "${SERVICES[@]}"; do
-    echo "📄 Generando certificado para $service..."
+    echo "📄 Generando certificado firmado para $service..."
     
-    # Crear archivo de configuración temporal con extensiones SAN
+    # Crear archivo de configuración con SAN
     cat > "$CERTS_DIR/${service}.conf" << EOF
 [req]
 distinguished_name = req_distinguished_name
@@ -45,28 +53,29 @@ DNS.3 = ${service}.docker.internal
 DNS.4 = localhost
 DNS.5 = ${service}-service
 IP.1 = 127.0.0.1
-IP.2 = ::1
 EOF
 
-    # Generar clave privada
+    # Generar clave privada del servicio
     openssl genrsa -out "$CERTS_DIR/${service}.key" 2048
     
-    # Generar certificado usando el archivo de configuración
-    openssl req -new -x509 -key "$CERTS_DIR/${service}.key" \
-        -out "$CERTS_DIR/${service}.crt" \
-        -days $VALIDITY_DAYS \
-        -config "$CERTS_DIR/${service}.conf" \
-        -extensions v3_req
+    # Generar CSR (Certificate Signing Request)
+    openssl req -new -key "$CERTS_DIR/${service}.key" -out "$CERTS_DIR/${service}.csr" \
+        -config "$CERTS_DIR/${service}.conf"
     
-    # Limpiar archivo temporal
-    rm "$CERTS_DIR/${service}.conf"
+    # Firmar el certificado con la CA
+    openssl x509 -req -in "$CERTS_DIR/${service}.csr" -CA "$CERTS_DIR/ca.crt" -CAkey "$CERTS_DIR/ca.key" \
+        -CAcreateserial -out "$CERTS_DIR/${service}.crt" -days $VALIDITY_DAYS \
+        -extensions v3_req -extfile "$CERTS_DIR/${service}.conf"
     
-    echo "  ✓ Certificado generado con SAN: ${service}, ${service}.net5g, localhost"
+    # Limpiar archivos temporales
+    rm "$CERTS_DIR/${service}.csr" "$CERTS_DIR/${service}.conf"
+    
+    echo "✓ Certificado firmado generado para $service"
 done
 
-# Generar certificado genérico para compatibilidad
-echo "📄 Generando certificado genérico para compatibilidad..."
-cat > "$CERTS_DIR/generic.conf" << EOF
+# 4. Generar certificado genérico también firmado por la CA
+echo "📄 Generando certificado genérico firmado..."
+cat > "$CERTS_DIR/tls.conf" << EOF
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
@@ -77,8 +86,6 @@ CN = 5g-core-generic
 O = 5G Core Network
 OU = Generic Certificate
 C = US
-ST = Docker
-L = Container
 
 [v3_req]
 keyUsage = keyEncipherment, dataEncipherment, digitalSignature
@@ -89,47 +96,22 @@ subjectAltName = @alt_names
 DNS.1 = localhost
 DNS.2 = *.net5g
 DNS.3 = *.docker.internal
-DNS.4 = amf
-DNS.5 = ausf
-DNS.6 = nrf
-DNS.7 = nssf
-DNS.8 = pcf
-DNS.9 = smf
-DNS.10 = udm
-DNS.11 = udr
-DNS.12 = webui
-DNS.13 = mongodb
 IP.1 = 127.0.0.1
-IP.2 = ::1
 EOF
 
 openssl genrsa -out "$CERTS_DIR/tls.key" 2048
-openssl req -new -x509 -key "$CERTS_DIR/tls.key" \
-    -out "$CERTS_DIR/tls.crt" \
-    -days $VALIDITY_DAYS \
-    -config "$CERTS_DIR/generic.conf" \
-    -extensions v3_req
+openssl req -new -key "$CERTS_DIR/tls.key" -out "$CERTS_DIR/tls.csr" -config "$CERTS_DIR/tls.conf"
+openssl x509 -req -in "$CERTS_DIR/tls.csr" -CA "$CERTS_DIR/ca.crt" -CAkey "$CERTS_DIR/ca.key" \
+    -CAcreateserial -out "$CERTS_DIR/tls.crt" -days $VALIDITY_DAYS \
+    -extensions v3_req -extfile "$CERTS_DIR/tls.conf"
 
-rm "$CERTS_DIR/generic.conf"
-echo "  ✓ Certificado genérico generado con wildcards"
+rm "$CERTS_DIR/tls.csr" "$CERTS_DIR/tls.conf"
 
-# Establecer permisos apropiados
-chmod 644 "$CERTS_DIR"/*.crt
-chmod 600 "$CERTS_DIR"/*.key
-
-echo ""
-echo "🔐 Certificados TLS generados exitosamente:"
-ls -la "$CERTS_DIR"
+echo "🎉 ¡Certificados CA y firmados generados exitosamente!"
+echo "📁 Archivos generados en $CERTS_DIR:"
+echo "   - ca.crt (Certificado de la CA - debe ser confiado por todos los servicios)"
+echo "   - ca.key (Clave privada de la CA)"
+echo "   - {servicio}.crt/.key (Certificados firmados para cada servicio)"
 
 echo ""
-echo "📋 Resumen de certificados con SAN correcto:"
-for service in "${SERVICES[@]}"; do
-    echo "  - $service: ${service}.crt / ${service}.key"
-    echo "    SAN: ${service}, ${service}.net5g, ${service}.docker.internal, localhost"
-done
-echo "  - genérico: tls.crt / tls.key"
-echo "    SAN: *.net5g, todos los servicios individuales, localhost"
-
-echo ""
-echo "🚀 Certificados listos para Docker Compose!"
-echo "   Ahora los servicios pueden conectarse usando nombres de contenedores."
+echo "📋 Próximo paso: Actualizar Docker Compose para montar ca.crt en todos los contenedores"
