@@ -18,4 +18,4 @@ curl -k -X PUT "${URL_BASE}/${NF_INSTANCE_ID}" \
 
 # curl -k -X <put here the operation> "<put here the URL>" \
 # -H "Content-Type: application/json" \
-# --data-binary "the json file to be used"
+# --data-binary "@<the json file to be used>"
