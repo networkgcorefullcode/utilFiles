@@ -18,6 +18,9 @@ services:
       - "8001:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   ausf:
     build: ./ausf
@@ -34,6 +37,9 @@ services:
       - "8002:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   nrf:
     build: ./nrf
@@ -50,6 +56,8 @@ services:
       - "8003:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
 
   nssf:
     build: ./nssf
@@ -66,6 +74,9 @@ services:
       - "8004:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   pcf:
     build: ./pcf
@@ -82,6 +93,9 @@ services:
       - "8005:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   smf:
     build: ./smf
@@ -98,6 +112,9 @@ services:
       - "8006:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   udm:
     build: ./udm
@@ -114,6 +131,9 @@ services:
       - "8007:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   udr:
     build: ./udr
@@ -130,6 +150,9 @@ services:
       - "8008:8000"
     networks:
       - net5g
+    depends_on:
+      - mongodb
+      - nrf
 
   webui:
     build: ./webconsole
@@ -147,6 +170,8 @@ services:
       - "5001:5001"
     networks:
       - net5g
+    depends_on:
+      - mongodb
 
   # upf:
   #   build: ./upf
