@@ -144,6 +144,7 @@ services:
       - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "5000:5000"
+      - "5001:5001"
     networks:
       - net5g
 
