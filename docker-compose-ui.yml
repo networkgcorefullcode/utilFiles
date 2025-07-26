@@ -100,9 +100,10 @@ services:
   smf:
     build: ../smf
     container_name: smf
-    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml"]
+    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml", "-uerouting", "/app/uerouting.yaml"]
     volumes:
       - ../configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/uerouting.yaml:/app/uerouting.yaml
       - ./certs/smf.crt:/var/run/certs/smf.crt:ro
       - ./certs/smf.key:/var/run/certs/smf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -176,6 +177,7 @@ services:
   nettools:
     image: nicolaka/netshoot:latest
     container_name: nettools
+    command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
       - net5g
     # Herramientas de red para testeo interno
