@@ -4,11 +4,11 @@ networks:
 
 services:
   amf:
-    build: ./amf
+    build: ../amf
     container_name: amf
     command: ["/usr/local/bin/amf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/amfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/amfcfg.yaml:/app/config.yaml
       - ./certs/amf.crt:/var/run/certs/amf.crt:ro
       - ./certs/amf.key:/var/run/certs/amf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -23,11 +23,11 @@ services:
       - nrf
 
   ausf:
-    build: ./ausf
+    build: ../ausf
     container_name: ausf
     command: ["/usr/local/bin/ausf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/ausfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/ausfcfg.yaml:/app/config.yaml
       - ./certs/ausf.crt:/var/run/certs/ausf.crt:ro
       - ./certs/ausf.key:/var/run/certs/ausf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -42,11 +42,11 @@ services:
       - nrf
 
   nrf:
-    build: ./nrf
+    build: ../nrf
     container_name: nrf
     command: ["/usr/local/bin/nrf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/nrfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/nrfcfg.yaml:/app/config.yaml
       - ./certs/nrf.crt:/var/run/certs/nrf.crt:ro
       - ./certs/nrf.key:/var/run/certs/nrf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -60,11 +60,11 @@ services:
       - mongodb
 
   nssf:
-    build: ./nssf
+    build: ../nssf
     container_name: nssf
     command: ["/usr/local/bin/nssf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/test_nssf_config.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/test_nssf_config.yaml:/app/config.yaml
       - ./certs/nssf.crt:/var/run/certs/nssf.crt:ro
       - ./certs/nssf.key:/var/run/certs/nssf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -83,7 +83,7 @@ services:
     container_name: pcf
     command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/pcfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/pcfcfg.yaml:/app/config.yaml
       - ./certs/pcf.crt:/var/run/certs/pcf.crt:ro
       - ./certs/pcf.key:/var/run/certs/pcf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -98,11 +98,12 @@ services:
       - nrf
 
   smf:
-    build: ./smf
+    build: ../smf
     container_name: smf
-    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml"]
+    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml", "-uerouting", "/app/uerouting.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/uerouting.yaml:/app/uerouting.yaml
       - ./certs/smf.crt:/var/run/certs/smf.crt:ro
       - ./certs/smf.key:/var/run/certs/smf.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -117,11 +118,11 @@ services:
       - nrf
 
   udm:
-    build: ./udm
+    build: ../udm
     container_name: udm
     command: ["/usr/local/bin/udm", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/udmcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/udmcfg.yaml:/app/config.yaml
       - ./certs/udm.crt:/var/run/certs/udm.crt:ro
       - ./certs/udm.key:/var/run/certs/udm.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -136,11 +137,11 @@ services:
       - nrf
 
   udr:
-    build: ./udr
+    build: ../udr
     container_name: udr
     command: ["/usr/local/bin/udr", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/udr_config.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/udr_config.yaml:/app/config.yaml
       - ./certs/udr.crt:/var/run/certs/udr.crt:ro
       - ./certs/udr.key:/var/run/certs/udr.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -155,11 +156,11 @@ services:
       - nrf
 
   webui:
-    build: ./webconsole
+    build: ../webconsole
     container_name: webui
     command: ["/usr/local/bin/webconsole", "--cfg", "/app/config.yaml"]
     volumes:
-      - ./configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml
       - ./certs/webui.crt:/var/run/certs/webui.crt:ro
       - ./certs/webui.key:/var/run/certs/webui.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
@@ -185,6 +186,7 @@ services:
   nettools:
     image: nicolaka/netshoot:latest
     container_name: nettools
+    command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
       - net5g
     # Herramientas de red para testeo interno
