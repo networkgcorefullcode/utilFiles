@@ -199,7 +199,7 @@ run_docker_compose() {
     
     # Construir imágenes primero
     log_info "Construyendo imágenes Docker..."
-    if docker-compose -f docker-compose-ui.yml build --no-cache; then
+    if docker-compose -f docker-compose-ui.yml build; then
         log_success "Imágenes construidas exitosamente"
     else
         log_error "Error al construir imágenes"
