@@ -173,15 +173,6 @@ services:
     depends_on:
       - mongodb
 
-  # upf:
-  #   build: ./upf
-  #   container_name: upf
-  #   volumes:
-  #     - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
-  #     - ./certs:/var/run/certs
-  #   networks:
-  #     - net5g
-
   nettools:
     image: nicolaka/netshoot:latest
     container_name: nettools
