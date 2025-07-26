@@ -165,7 +165,7 @@ sudo rm -rf /var/run/netns/pause
 cd ../upf
 
 # Build
-task docker-build
+make docker-build
 
 if [ "$mode" == 'dpdk' ]; then
 	DEVICES=${DEVICES:-'--device=/dev/vfio/48 --device=/dev/vfio/49 --device=/dev/vfio/vfio'}
