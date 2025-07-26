@@ -220,6 +220,7 @@ fi
 
 # Run bessd
 docker run --name bess -td --restart unless-stopped \
+	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
 	-v "$PWD/conf":/opt/bess/bessctl/conf \
 	--net container:pause \
