@@ -219,6 +219,7 @@ if [ "$mode" == 'cndp' ]; then
 fi
 
 cd ..
+cp utilFiles/VERSION .
 
 # Run bessd
 docker run --name bess -td --restart unless-stopped \
