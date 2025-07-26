@@ -79,7 +79,7 @@ services:
       - nrf
 
   pcf:
-    build: ./pcf
+    build: ../pcf
     container_name: pcf
     command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
     volumes:
@@ -175,10 +175,10 @@ services:
       - mongodb
 
   # upf:
-  #   build: ./upf
+  #   build: ../upf
   #   container_name: upf
   #   volumes:
-  #     - ./configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
+  #     - ..configs_files/docker_compose_config/upfcfg.yaml:/app/config.yaml
   #     - ./certs:/var/run/certs
   #   networks:
   #     - net5g
