@@ -218,11 +218,13 @@ if [ "$mode" == 'cndp' ]; then
 	HUGEPAGES='-m 2048'
 fi
 
+cd ..
+
 # Run bessd
 docker run --name bess -td --restart unless-stopped \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
-	-v "$PWD/conf":/opt/bess/bessctl/conf \
+	-v "$PWD/configs_files/docker_compose_config/conf_bess":/opt/bess/bessctl/conf \
 	--net container:pause \
 	$PRIVS \
 	$DEVICES \
@@ -244,7 +246,7 @@ docker run --name bess-web -d --restart unless-stopped \
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
 	--net container:pause \
-	-v "$PWD/conf/upf.jsonc":/conf/upf.jsonc \
+	-v "$PWD/configs_files/docker_compose_config/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
 
@@ -255,7 +257,7 @@ fi
 
 # Run bess-routectl
 docker run --name bess-routectl -td --restart unless-stopped \
-	-v "$PWD/conf/route_control.py":/route_control.py \
+	-v "$PWD/configs_files/docker_compose_config/route_control.py":/route_control.py \
 	--net container:pause --pid container:bess \
 	--entrypoint /route_control.py \
 	upf-epc-bess:"$(<VERSION)" -i "${ifaces[@]}"
