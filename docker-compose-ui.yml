@@ -16,6 +16,7 @@ services:
       - ./certs/ca.crt:/var/run/certs/ca.crt:ro
     ports:
       - "8001:8000"
+      - "50051:50051"  # Puerto gRPC para SCTP Load Balancer
     networks:
       - net5g
     depends_on:
