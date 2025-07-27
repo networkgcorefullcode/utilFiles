@@ -22,9 +22,6 @@ services:
     depends_on:
       - mongodb
       - nrf
-    environment: # <<-- Agrega esta sección
-      - GRPC_GO_LOG_VERBOSITY_LEVEL=99
-      - GRPC_GO_LOG_SEVERITY_LEVEL=info
 
   ausf:
     build: ../ausf
