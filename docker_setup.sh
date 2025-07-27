@@ -169,10 +169,6 @@ show_hugepages_setup_instructions() {
     read -r
 }
 
-# TCP port of bess/web monitor
-gui_port=8000
-bessd_port=10514
-metrics_port=8080
 
 # Banner informativo
 echo -e "${BLUE}"
@@ -195,6 +191,11 @@ log_info "Verificando prerequisitos del sistema..."
 #mode="af_xdp"
 #mode="af_packet"
 mode="sim"
+
+# TCP port of bess/web monitor
+gui_port=8000
+bessd_port=10514
+metrics_port=8090
 
 # Gateway interface(s)
 #
@@ -401,10 +402,10 @@ cp utilFiles/VERSION .
 
 # Run bessd
 docker run --name bess -td --restart unless-stopped \
+    --network net5g \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
 	-v "$PWD/configs_files/docker_compose_config/conf_bess":/opt/bess/bessctl/conf \
-	--net container:pause \
 	$PRIVS \
 	$DEVICES \
 	upf-epc-bess:"$(<VERSION)" -grpc-url=0.0.0.0:$bessd_port $HUGEPAGES
@@ -418,13 +419,13 @@ sleep 10
 
 # Run bess-web
 docker run --name bess-web -d --restart unless-stopped \
-	--net container:bess \
+	--network net5g \
 	--entrypoint bessctl \
 	upf-epc-bess:"$(<VERSION)" http 0.0.0.0 $gui_port
 
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
-	--net container:pause \
+	--network net5g \
 	-v "$PWD/configs_files/docker_compose_config/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
