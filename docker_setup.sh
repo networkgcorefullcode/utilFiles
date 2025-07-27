@@ -357,6 +357,15 @@ elif [ "$mode" == 'af_packet' ]; then
 	PRIVS='--cap-add IPC_LOCK'
 fi
 
+# Crear la red Docker 'net5g' si no existe
+if ! docker network ls | grep -q 'net5g'; then
+    log_info "Creando red Docker 'net5g'..."
+    docker network create --driver bridge net5g
+    log_success "Red 'net5g' creada exitosamente"
+else
+    log_info "La red Docker 'net5g' ya existe"
+fi
+
 # Run pause
 docker run --name pause -td --restart unless-stopped \
 	-p $bessd_port:$bessd_port \
