@@ -174,6 +174,28 @@ services:
     depends_on:
       - mongodb
 
+  sctplb:
+    build: ../sctplb
+    container_name: sctplb
+    command: ["/usr/local/bin/sctplb", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/sctplb.yaml:/app/config.yaml
+    networks:
+      - net5g
+  
+  gnbsim:
+    build: ../gnbsim
+    container_name: gnbsim
+    command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/gnbsim.yaml:/app/config.yaml
+    ports:
+      - "8083:8080"
+    networks:
+      - net5g
+    depends_on:
+      - sctplb
+
   nettools:
     image: nicolaka/netshoot:latest
     container_name: nettools
