@@ -28,149 +28,10 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Función para verificar y configurar HugePages
-check_hugepages() {
-    log_info "Verificando configuración de HugePages..."
-    
-    # Verificar si HugePages están montadas
-    if ! mount | grep -q hugepages; then
-        log_warning "HugePages no están montadas. Montando..."
-        sudo mkdir -p /dev/hugepages
-        sudo mount -t hugetlbfs nodev /dev/hugepages
-    fi
-    
-    # Verificar HugePages disponibles
-    hugepages_1g=$(cat /proc/meminfo | grep HugePages_Total | awk '{print $2}')
-    hugepage_size=$(cat /proc/meminfo | grep Hugepagesize | awk '{print $2}')
-    
-    log_info "HugePages disponibles: $hugepages_1g de ${hugepage_size}KB cada una"
-    
-    # Verificar si tenemos suficientes HugePages (necesitamos al menos 2)
-    if [ "$hugepages_1g" -lt 2 ]; then
-        log_warning "Insuficientes HugePages configuradas (actual: $hugepages_1g, necesarias: 2)"
-        log_warning "Configurando HugePages temporalmente..."
-        
-        # Intentar configurar HugePages temporalmente
-        echo 2 | sudo tee /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages > /dev/null
-        
-        # Verificar si se configuraron correctamente
-        new_hugepages=$(cat /proc/meminfo | grep HugePages_Total | awk '{print $2}')
-        if [ "$new_hugepages" -ge 2 ]; then
-            log_success "HugePages configuradas temporalmente: $new_hugepages"
-            configure_grub_hugepages
-        else
-            log_error "No se pudieron configurar HugePages temporalmente"
-            show_hugepages_setup_instructions
-            return 1
-        fi
-    else
-        log_success "HugePages configuradas correctamente: $hugepages_1g"
-    fi
-    
-    # Verificar Transparent HugePages
-    thp_status=$(cat /sys/kernel/mm/transparent_hugepage/enabled)
-    if [[ "$thp_status" != *"[never]"* ]]; then
-        log_warning "Transparent HugePages están habilitadas. Deshabilitando temporalmente..."
-        echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled > /dev/null
-        log_success "Transparent HugePages deshabilitadas temporalmente"
-    else
-        log_success "Transparent HugePages ya están deshabilitadas"
-    fi
-}
 
-# Función para configurar GRUB automáticamente (opcional)
-configure_grub_hugepages() {
-    log_info "¿Deseas configurar HugePages permanentemente en GRUB? (y/N)"
-    read -r response
-    
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        log_info "Configurando GRUB para HugePages permanentes..."
-        
-        # Backup del archivo GRUB actual
-        sudo cp /etc/default/grub /etc/default/grub.backup.$(date +%Y%m%d_%H%M%S)
-        log_success "Backup de GRUB creado en /etc/default/grub.backup.*"
-        
-        # Verificar si ya existe configuración de HugePages en GRUB
-        if grep -q "hugepages=" /etc/default/grub; then
-            log_warning "Ya existe configuración de HugePages en GRUB"
-            log_info "Archivo actual:"
-            grep GRUB_CMDLINE_LINUX /etc/default/grub
-        else
-            # Agregar configuración de HugePages
-            log_info "Agregando configuración de HugePages a GRUB..."
-            
-            # Leer línea actual de GRUB_CMDLINE_LINUX
-            current_line=$(grep '^GRUB_CMDLINE_LINUX=' /etc/default/grub | head -1)
-            
-            if [ -n "$current_line" ]; then
-                # Quitar las comillas y agregar parámetros de HugePages
-                new_params="intel_iommu=on iommu=pt default_hugepagesz=1G hugepagesz=1G hugepages=2 transparent_hugepage=never"
-                
-                # Construir nueva línea
-                if [[ "$current_line" == *'""'* ]]; then
-                    # Línea vacía
-                    new_line="GRUB_CMDLINE_LINUX=\"$new_params\""
-                else
-                    # Línea con contenido existente
-                    existing_params=$(echo "$current_line" | sed 's/GRUB_CMDLINE_LINUX="\(.*\)"/\1/')
-                    new_line="GRUB_CMDLINE_LINUX=\"$existing_params $new_params\""
-                fi
-                
-                # Reemplazar línea en el archivo
-                sudo sed -i "s|^GRUB_CMDLINE_LINUX=.*|$new_line|" /etc/default/grub
-                
-                log_success "GRUB configurado con HugePages"
-                log_info "Nueva configuración:"
-                grep GRUB_CMDLINE_LINUX /etc/default/grub
-                
-                # Actualizar GRUB
-                log_info "Actualizando GRUB..."
-                sudo update-grub
-                
-                log_success "GRUB actualizado exitosamente"
-                log_warning "Reinicia el sistema para aplicar los cambios: sudo reboot"
-                
-            else
-                log_error "No se encontró línea GRUB_CMDLINE_LINUX en /etc/default/grub"
-            fi
-        fi
-    else
-        log_info "Configuración de GRUB omitida. Usando configuración temporal."
-    fi
-}
-
-# Función para mostrar instrucciones de configuración permanente
-show_hugepages_setup_instructions() {
-    echo -e "${YELLOW}"
-    echo "==============================================="
-    echo "    CONFIGURACIÓN PERMANENTE DE HUGEPAGES"
-    echo "==============================================="
-    echo -e "${NC}"
-    
-    log_warning "Para hacer la configuración permanente, ejecuta los siguientes comandos:"
-    echo ""
-    echo "1. Editar GRUB configuration:"
-    echo "   sudo vim /etc/default/grub"
-    echo ""
-    echo "2. Agregar o modificar la línea GRUB_CMDLINE_LINUX:"
-    echo "   GRUB_CMDLINE_LINUX=\"intel_iommu=on iommu=pt default_hugepagesz=1G hugepagesz=1G hugepages=2 transparent_hugepage=never\""
-    echo ""
-    echo "3. Actualizar GRUB:"
-    echo "   sudo update-grub"
-    echo ""
-    echo "4. Reiniciar el sistema:"
-    echo "   sudo reboot"
-    echo ""
-    echo "5. Verificar después del reinicio:"
-    echo "   cat /proc/meminfo | grep -i hugepage"
-    echo "   cat /sys/kernel/mm/transparent_hugepage/enabled"
-    echo ""
-    log_info "Presiona Enter para continuar con configuración temporal..."
-    read -r
-}
 
 # TCP port of bess/web monitor
-gui_port=8000
+gui_port=8085
 bessd_port=10514
 metrics_port=8080
 
@@ -200,6 +61,7 @@ mode="sim"
 #
 # In the order of ("s1u/n3" "sgi/n6")
 ifaces=("ens803f2" "ens803f3")
+#ifaces=("ens19")
 
 # Static IP addresses of gateway interface(s) in cidr format
 #
@@ -337,8 +199,7 @@ docker stop pause bess bess-routectl bess-web bess-pfcpiface || true
 docker rm -f pause bess bess-routectl bess-web bess-pfcpiface || true
 sudo rm -rf /var/run/netns/pause
 
-# Verificar y configurar HugePages antes de continuar
-check_hugepages
+
 
 cd ../upf
 
@@ -390,7 +251,7 @@ if [ "$mode" != 'sim' ]; then
 fi
 
 # Specify per-socket hugepages to allocate (in MBs) by bess daemon (default: 1024)
-HUGEPAGES=''
+HUGEPAGES='-m 2048'
 # Use more hugepages for CNDP
 if [ "$mode" == 'cndp' ]; then
 	HUGEPAGES='-m 2048'
@@ -403,7 +264,7 @@ cp utilFiles/VERSION .
 docker run --name bess -td --restart unless-stopped \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
-	-v "$PWD/configs_files/docker_compose_config/conf_bess":/opt/bess/bessctl/conf \
+	-v "$PWD/upf/conf":/opt/bess/bessctl/conf \
 	--net container:pause \
 	$PRIVS \
 	$DEVICES \
@@ -425,7 +286,7 @@ docker run --name bess-web -d --restart unless-stopped \
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
 	--net container:pause \
-	-v "$PWD/configs_files/docker_compose_config/upf.jsonc":/conf/upf.jsonc \
+	-v "$PWD/upf/conf/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
 
@@ -436,7 +297,7 @@ fi
 
 # Run bess-routectl
 docker run --name bess-routectl -td --restart unless-stopped \
-	-v "$PWD/configs_files/docker_compose_config/route_control.py":/route_control.py \
+	-v "$PWD/upf/conf/route_control.py":/route_control.py \
 	--net container:pause --pid container:bess \
 	--entrypoint /route_control.py \
 	upf-epc-bess:"$(<VERSION)" -i "${ifaces[@]}"
