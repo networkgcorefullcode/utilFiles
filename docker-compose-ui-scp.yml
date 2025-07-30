@@ -1,0 +1,264 @@
+networks:
+  net5g:
+    driver: bridge
+
+services:
+  amf:
+    build: ../amf
+    container_name: amf
+    command: ["/usr/local/bin/amf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/amfcfg.yaml:/app/config.yaml
+      - ./certs/amf.crt:/var/run/certs/amf.crt:ro
+      - ./certs/amf.key:/var/run/certs/amf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8001:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  ausf:
+    build: ../ausf
+    container_name: ausf
+    command: ["/usr/local/bin/ausf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/ausfcfg.yaml:/app/config.yaml
+      - ./certs/ausf.crt:/var/run/certs/ausf.crt:ro
+      - ./certs/ausf.key:/var/run/certs/ausf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8002:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  nrf:
+    build: ../nrf
+    container_name: nrf
+    command: ["/usr/local/bin/nrf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/nrfcfg.yaml:/app/config.yaml
+      - ./certs/nrf.crt:/var/run/certs/nrf.crt:ro
+      - ./certs/nrf.key:/var/run/certs/nrf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8003:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+
+  nssf:
+    build: ../nssf
+    container_name: nssf
+    command: ["/usr/local/bin/nssf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/test_nssf_config.yaml:/app/config.yaml
+      - ./certs/nssf.crt:/var/run/certs/nssf.crt:ro
+      - ./certs/nssf.key:/var/run/certs/nssf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8004:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  pcf:
+    build: ../pcf
+    container_name: pcf
+    command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/pcfcfg.yaml:/app/config.yaml
+      - ./certs/pcf.crt:/var/run/certs/pcf.crt:ro
+      - ./certs/pcf.key:/var/run/certs/pcf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8005:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  smf:
+    build: ../smf
+    container_name: smf
+    command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml", "-uerouting", "/app/uerouting.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/smfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config/uerouting.yaml:/app/uerouting.yaml
+      - ./certs/smf.crt:/var/run/certs/smf.crt:ro
+      - ./certs/smf.key:/var/run/certs/smf.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8006:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  udm:
+    build: ../udm
+    container_name: udm
+    command: ["/usr/local/bin/udm", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/udmcfg.yaml:/app/config.yaml
+      - ./certs/udm.crt:/var/run/certs/udm.crt:ro
+      - ./certs/udm.key:/var/run/certs/udm.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8007:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  udr:
+    build: ../udr
+    container_name: udr
+    command: ["/usr/local/bin/udr", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/udr_config.yaml:/app/config.yaml
+      - ./certs/udr.crt:/var/run/certs/udr.crt:ro
+      - ./certs/udr.key:/var/run/certs/udr.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8008:8000"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+      - nrf
+
+  webui:
+    build: ../webconsole
+    container_name: webui
+    command: ["/usr/local/bin/webconsole-ui", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/webuicfg.yaml:/app/config.yaml
+      - ./certs/webui.crt:/var/run/certs/webui.crt:ro
+      - ./certs/webui.key:/var/run/certs/webui.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - net5g
+    depends_on:
+      - mongodb
+
+  sctplb:
+    build: ../sctplb
+    container_name: sctplb
+    command: ["/usr/local/bin/sctplb", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/sctplb.yaml:/app/config.yaml
+    networks:
+      - net5g
+
+  scp:
+    build: ../scp
+    container_name: scp
+    command: ["/usr/local/bin/scp", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/scpcfg.yaml:/app/config.yaml
+    networks:
+      - net5g
+
+  # gnbsim:
+  #   build: ../gnbsim
+  #   container_name: gnbsim
+  #   command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
+  #   volumes:
+  #     - ../configs_files/docker_compose_config/gnbsim.yaml:/app/config.yaml
+  #   ports:
+  #     - "8083:8080"
+  #   networks:
+  #     - net5g
+  #   depends_on:
+  #     - sctplb
+
+  nettools:
+    image: nicolaka/netshoot:latest
+    container_name: nettools
+    command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
+    networks:
+      - net5g
+    # Herramientas de red para testeo interno
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+      - ./certs/mongodb.crt:/var/run/certs/mongodb.crt:ro
+      - ./certs/mongodb.key:/var/run/certs/mongodb.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      MONGO_INITDB_DATABASE: admin
+    networks:
+      - net5g
+
+  mongo-setup:
+    image: mongo:latest
+    container_name: mongo-setup
+    depends_on:
+      - mongodb
+    volumes:
+      - ./mongo-setup.sh:/mongo-setup.sh
+    entrypoint: ["bash", "/mongo-setup.sh"]
+    networks:
+      - net5g
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+    depends_on:
+      - mongodb
+      - mongo-setup
+    networks:
+      - net5g
