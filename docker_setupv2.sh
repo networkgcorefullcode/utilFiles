@@ -52,37 +52,25 @@ mode="sim"  # Usar simulación por defecto en contenedores
 # Red de Docker Compose
 DOCKER_NETWORK=${DOCKER_NETWORK:-"net5g"}
 
-# Configuración para entorno Docker Compose
-if [ "$DOCKER_ENV" = true ]; then
-    log_info "Configurando para entorno Docker Compose..."
-    
-    # Interfaces virtuales en lugar de físicas
-    ifaces=("access" "core")
-    
-    # IPs internas de Docker (obtenidas dinámicamente)
-    # Estas se configurarán automáticamente por Docker
-    ipaddrs=("172.18.0.100/24" "172.18.0.101/24")
-    
-    # MACs virtuales
-    macaddrs=("02:42:ac:12:00:64" "02:42:ac:12:00:65")
-    
-    # Gateway de Docker (se detecta automáticamente)
-    DOCKER_GW=$(ip route | grep $DOCKER_NETWORK | awk '{print $1}' | head -1)
-    nhipaddrs=("172.18.0.1" "172.18.0.1")  # Gateway de Docker
-    nhmacaddrs=("02:42:ac:12:00:01" "02:42:ac:12:00:01")
-    
-    # Rutas para entorno Docker
-    routes=("10.250.0.0/16" "0.0.0.0/0")  # UE pool y default
-    
-else
-    # Configuración original para bare metal
-    ifaces=("ens803f2" "ens803f3")
-    ipaddrs=(198.18.0.1/30 198.19.0.1/30)
-    macaddrs=(9e:b2:d3:34:ab:27 c2:9c:55:d4:8a:f6)
-    nhipaddrs=(198.18.0.2 198.19.0.2)
-    nhmacaddrs=(22:53:7a:15:58:50 22:53:7a:15:58:50)
-    routes=("11.1.1.128/25" "0.0.0.0/0")
-fi
+log_info "Configurando para entorno Docker Compose..."
+
+# Interfaces virtuales en lugar de físicas
+ifaces=("access" "core")
+
+# IPs internas de Docker (obtenidas dinámicamente)
+# Estas se configurarán automáticamente por Docker
+ipaddrs=("172.18.0.100/24" "172.18.0.101/24")
+
+# MACs virtuales
+macaddrs=("02:42:ac:12:00:64" "02:42:ac:12:00:65")
+
+# Gateway de Docker (se detecta automáticamente)
+DOCKER_GW=$(ip route | grep $DOCKER_NETWORK | awk '{print $1}' | head -1)
+nhipaddrs=("172.18.0.1" "172.18.0.1")  # Gateway de Docker
+nhmacaddrs=("02:42:ac:12:00:01" "02:42:ac:12:00:01")
+
+# Rutas para entorno Docker
+routes=("10.250.0.0/16" "0.0.0.0/0")  # UE pool y default
 
 num_ifaces=${#ifaces[@]}
 num_ipaddrs=${#ipaddrs[@]}
@@ -112,12 +100,6 @@ function setup_addrs() {
 # Configuración específica para entorno Docker
 function setup_docker_environment() {
     log_info "Configurando entorno Docker Compose..."
-    
-# Verificar que estamos en el contenedor correcto
-    if [ ! -f /.dockerenv ]; then
-        log_warning "No se detectó entorno Docker, continuando como host"
-        return 1
-    fi
     
     # Verificar conectividad con otros servicios
     log_info "Verificando conectividad con servicios 5G..."
@@ -424,15 +406,8 @@ main() {
     echo "==============================================="
     echo -e "${NC}"
     
-    # Detectar entorno
-    if [ "$DOCKER_ENV" = true ]; then
-        log_info "Entorno Docker detectado - usando configuración adaptada"
-        setup_upf_docker "$mode"
-    else
-        log_info "Entorno bare metal detectado - usando configuración original"
-        setup_upf_bare_metal "$mode"
-    fi
-    
+	setup_upf_docker "$mode"
+        
     local exit_code=$?
     
     if [ $exit_code -eq 0 ]; then
@@ -450,20 +425,6 @@ main() {
     fi
     
     return $exit_code
-}
-
-# Función para bare metal (configuración original)
-setup_upf_bare_metal() {
-    local mode="$1"
-    
-    log_info "=== CONFIGURACIÓN UPF PARA BARE METAL ==="
-    
-    # Aquí iría toda la lógica original del script
-    # Por ahora, un placeholder
-    log_info "Ejecutando configuración bare metal..."
-    log_warning "Configuración bare metal no implementada en esta versión"
-    
-    return 0
 }
 
 # Ejecutar función principal si el script se ejecuta directamente
