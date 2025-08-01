@@ -235,12 +235,13 @@ docker run --name bess -td --restart unless-stopped \
 	$DEVICES \
 	upf-epc-bess:"$(<VERSION)" -grpc-url=0.0.0.0:$bessd_port $HUGEPAGES
 
-docker logs bess
 
 # Sleep for a couple of secs before setting up the pipeline
 sleep 10
 docker exec bess ./bessctl run up4
 sleep 10
+
+docker logs bess
 
 # Run bess-web
 docker run --name bess-web -d --restart unless-stopped \
