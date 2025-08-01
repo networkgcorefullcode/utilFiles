@@ -4,45 +4,10 @@
 
 set -e
 
-# Colores para output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Función para logging
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-
-
 # TCP port of bess/web monitor
 gui_port=8085
 bessd_port=10514
 metrics_port=8080
-
-# Banner informativo
-echo -e "${BLUE}"
-echo "==============================================="
-echo "           UPF BESS SETUP SCRIPT"
-echo "==============================================="
-echo -e "${NC}"
-log_info "Este script configurará el UPF (User Plane Function) con BESS"
-log_info "Verificando prerequisitos del sistema..."
 
 # Driver options. Choose any one of the three
 #
