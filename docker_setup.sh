@@ -217,6 +217,14 @@ elif [ "$mode" == 'af_packet' ]; then
 	PRIVS='--cap-add IPC_LOCK'
 fi
 
+# Run pause
+docker run --name pause -td --restart unless-stopped \
+	-p $bessd_port:$bessd_port \
+	-p $gui_port:$gui_port \
+	-p $metrics_port:$metrics_port \
+	--hostname $(hostname) \
+	k8s.gcr.io/pause
+
 # Emulate CNI + init container
 sudo mkdir -p /var/run/netns
 sandbox=$(docker inspect --format='{{.NetworkSettings.SandboxKey}}' pause)
@@ -257,7 +265,7 @@ docker run --name bess -td --restart unless-stopped \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
 	-v "$PWD/upf/conf":/opt/bess/bessctl/conf \
-	--net utilfiles_net5g \
+	--net container:pause \
 	$PRIVS \
 	$DEVICES \
 	upf-epc-bess:"$(<VERSION)" -grpc-url=0.0.0.0:$bessd_port $HUGEPAGES
@@ -271,13 +279,13 @@ sleep 10
 
 # Run bess-web
 docker run --name bess-web -d --restart unless-stopped \
-	--net utilfiles_net5g \
+	--net container:bess \
 	--entrypoint bessctl \
 	upf-epc-bess:"$(<VERSION)" http 0.0.0.0 $gui_port
 
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
-	--net utilfiles_net5g \
+	--net container:pause \
 	-v "$PWD/upf/conf/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
@@ -290,6 +298,6 @@ fi
 # Run bess-routectl
 docker run --name bess-routectl -td --restart unless-stopped \
 	-v "$PWD/upf/conf/route_control.py":/route_control.py \
-	--net utilfiles_net5g --pid container:bess \
+	--net container:pause --pid container:bess \
 	--entrypoint /route_control.py \
 	upf-epc-bess:"$(<VERSION)" -i "${ifaces[@]}"
