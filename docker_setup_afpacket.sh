@@ -271,6 +271,8 @@ if [ "$mode" == 'sim' ]; then
 	exit
 fi
 
+chmod +x configs_files/docker_compose_config_notsim/route_control.py
+
 # Run bess-routectl
 docker run --name bess-routectl -td --restart unless-stopped \
 	-v "$PWD/configs_files/docker_compose_config_notsim/route_control.py":/route_control.py \
