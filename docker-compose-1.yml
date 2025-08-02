@@ -214,18 +214,18 @@ services:
       net5g:
         ipv4_address: 172.18.0.19
   
-  # gnbsim:
-  #   build: ../gnbsim
-  #   container_name: gnbsim
-  #   command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
-  #   volumes:
-  #     - ../configs_files/docker_compose_config/gnbsim.yaml:/app/config.yaml
-  #   ports:
-  #     - "8083:8080"
-  #   networks:
-  #     - net5g
-  #   depends_on:
-  #     - sctplb
+  gnbsim:
+    build: ../gnbsim
+    container_name: gnbsim
+    command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
+    volumes:
+      - ../configs_files/docker_compose_config/gnbsim.yaml:/app/config.yaml
+    ports:
+      - "8083:8080"
+    networks:
+      - net5g
+    depends_on:
+      - sctplb
 
   nettools:
     image: nicolaka/netshoot:latest
