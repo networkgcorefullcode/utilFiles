@@ -165,6 +165,14 @@ docker rm -f pause bess bess-routectl bess-web bess-pfcpiface || true
 sudo rm -rf /var/run/netns/pause
 
 
+sudo ip link add ens801f0 type veth peer name ens801f1
+# Levantar las interfaces
+sudo ip link set ens801f0 up
+sudo ip link set ens801f1 up
+ip link show ens801f0
+ip link show ens801f1
+sudo ip addr add 198.168.0.1/24 dev ens801f0
+sudo ip addr add 198.168.1.1/24 dev ens801f1
 
 cd ../upf
 
@@ -231,7 +239,7 @@ cp utilFiles/VERSION .
 docker run --name bess -td --restart unless-stopped \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
-	-v "$PWD/upf/conf":/opt/bess/bessctl/conf \
+	-v "$PWD/configs_files/docker_compose_config_notsim":/opt/bess/bessctl/conf \
 	--net container:pause \
 	$PRIVS \
 	$DEVICES \
