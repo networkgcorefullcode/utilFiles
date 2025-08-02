@@ -127,14 +127,14 @@ services:
       - mongodb
       - nrf
 
-  upf-adapter:
+  upfadapter:
     build: ../upfadapter
     container_name: upf-adapter
-    command: ["/usr/local/bin/upf-adapter"]
+    command: ["/usr/local/bin/upfadapter"]
     volumes:
-      - ../configs_files/docker_compose_config/upf-adapter.yaml:/app/config.yaml
-      - ./certs/upf-adapter.crt:/var/run/certs/upf-adapter.crt:ro
-      - ./certs/upf-adapter.key:/var/run/certs/upf-adapter.key:ro
+      - ../configs_files/docker_compose_config/upfadapter.yaml:/app/config.yaml
+      - ./certs/upfadapter.crt:/var/run/certs/upfadapter.crt:ro
+      - ./certs/upfadapter.key:/var/run/certs/upfadapter.key:ro
       - ./certs/tls.crt:/var/run/certs/tls.crt:ro
       - ./certs/tls.key:/var/run/certs/tls.key:ro
       - ./certs/ca.crt:/var/run/certs/ca.crt:ro
