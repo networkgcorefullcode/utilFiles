@@ -4,73 +4,54 @@
 
 set -e
 
-# Colores para output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Función para logging
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-
-
 # TCP port of bess/web monitor
 gui_port=8085
 bessd_port=10514
 metrics_port=8080
 
-# Banner informativo
-echo -e "${BLUE}"
-echo "==============================================="
-echo "       UPF BESS DOCKER COMPOSE SETUP"
-echo "==============================================="
-echo -e "${NC}"
-log_info "Este script configurará el UPF (User Plane Function) con BESS para Docker Compose"
-log_info "Verificando prerequisitos del sistema..."
+# Driver options. Choose any one of the three
+#
+# "dpdk" set as default
+# "af_xdp" uses AF_XDP sockets via DPDK's vdev for pkt I/O. This version is non-zc version. ZC version still needs to be evaluated.
+# "af_packet" uses AF_PACKET sockets via DPDK's vdev for pkt I/O.
+# "sim" uses Source() modules to simulate traffic generation
+# "cndp" uses kernel AF-XDP. It supports ZC and XDP offload if driver and NIC supports it. It's tested on Intel 800 series n/w adapter.
+# mode="dpdk"
+#mode="cndp"
+#mode="af_xdp"
+#mode="af_packet"
+mode="sim"
 
-# Detectar si estamos en un entorno Docker
-DOCKER_ENV=true
-# Driver options para entorno containerizado
-mode="sim"  # Usar simulación por defecto en contenedores
+# Gateway interface(s)
+#
+# In the order of ("s1u/n3" "sgi/n6")
+ifaces=("ens803f2" "ens803f3")
+#ifaces=("ens19")
 
-# Red de Docker Compose
-DOCKER_NETWORK=${DOCKER_NETWORK:-"net5g"}
+# Static IP addresses of gateway interface(s) in cidr format
+#
+# In the order of (s1u/n3 sgi/n6)
+ipaddrs=(198.18.0.1/30 198.19.0.1/30)
 
-log_info "Configurando para entorno Docker Compose..."
+# MAC addresses of gateway interface(s)
+#
+# In the order of (s1u/n3 sgi/n6)
+macaddrs=(9e:b2:d3:34:ab:27 c2:9c:55:d4:8a:f6)
 
-# Interfaces virtuales en lugar de físicas
-ifaces=("access" "core")
+# Static IP addresses of the neighbors of gateway interface(s)
+#
+# In the order of (n-s1u/n3 n-sgi/n6)
+nhipaddrs=(198.18.0.2 198.19.0.2)
 
-# IPs internas de Docker (obtenidas dinámicamente)
-# Estas se configurarán automáticamente por Docker
-ipaddrs=("172.18.0.100/24" "172.18.0.101/24")
+# Static MAC addresses of the neighbors of gateway interface(s)
+#
+# In the order of (n-s1u/n3 n-sgi/n6)
+nhmacaddrs=(22:53:7a:15:58:50 22:53:7a:15:58:50)
 
-# MACs virtuales
-macaddrs=("02:42:ac:12:00:64" "02:42:ac:12:00:65")
-
-# Gateway de Docker (se detecta automáticamente)
-DOCKER_GW=$(ip route | grep $DOCKER_NETWORK | awk '{print $1}' | head -1)
-nhipaddrs=("172.18.0.1" "172.18.0.1")  # Gateway de Docker
-nhmacaddrs=("02:42:ac:12:00:01" "02:42:ac:12:00:01")
-
-# Rutas para entorno Docker
-routes=("10.250.0.0/16" "0.0.0.0/0")  # UE pool y default
+# IPv4 route table entries in cidr format per port
+#
+# In the order of ("{r-s1u/n3}" "{r-sgi/n6}")
+routes=("11.1.1.128/25" "0.0.0.0/0")
 
 num_ifaces=${#ifaces[@]}
 num_ipaddrs=${#ipaddrs[@]}
@@ -93,160 +74,11 @@ function setup_addrs() {
 	done
 }
 
-# ================================================
-# FUNCIONES PARA DOCKER COMPOSE
-# ================================================
-
-# Configuración específica para entorno Docker
-function setup_docker_environment() {
-    log_info "Configurando entorno Docker Compose..."
-    
-    # Verificar conectividad con otros servicios
-    log_info "Verificando conectividad con servicios 5G..."
-    
-    # Verificar conectividad con SMF (requerido para UPF)
-    if ping -c 1 -W 2 smf >/dev/null 2>&1; then
-        log_success "Conectividad con SMF: OK"
-    else
-        log_warning "SMF no accesible - verificar docker-compose.yml"
-    fi
-    
-    # Verificar conectividad con NRF  
-    if ping -c 1 -W 2 nrf >/dev/null 2>&1; then
-        log_success "Conectividad con NRF: OK"
-    else
-        log_warning "NRF no accesible - verificar docker-compose.yml"
-    fi
-    
-    # Verificar red Docker
-    local network_info=$(docker network inspect "$DOCKER_NETWORK" 2>/dev/null)
-    if [ $? -eq 0 ]; then
-        log_success "Red Docker '$DOCKER_NETWORK' encontrada"
-        local gateway=$(echo "$network_info" | grep -o '"Gateway": "[^"]*"' | cut -d'"' -f4)
-        log_info "Gateway de red: $gateway"
-    else
-        log_error "Red Docker '$DOCKER_NETWORK' no encontrada"
-        log_info "Redes disponibles:"
-        docker network ls
-        return 1
-    fi
-    
-    # No necesitamos configurar interfaces físicas en Docker
-    log_info "Usando interfaces virtuales para simulación"
-    
-    return 0
-}
-
-# Configurar BESS para Docker Compose
-function bessctl_configure_docker() {
-    local mode="$1"
-    
-    log_info "Generando configuración BESS para Docker Compose..."
-    
-    # Crear directorio de configuración si no existe
-    mkdir -p "${confpath}"
-    
-    # Generar configuración específica para Docker
-    cat > "${confpath}/upf.jsonc" << EOF
-{
-    "mode": "$mode",
-    "workers": 1,
-    "max_sessions": 50000,
-    "table_sizes": {
-        "pdrLookup": 50000,
-        "appQERLookup": 200000,
-        "sessionQERLookup": 100000,
-        "farLookup": 150000
-    },
-    "interfaces": {
-        "access": {
-            "ifname": "access",
-            "device": "$mode"
-        },
-        "core": {
-            "ifname": "core", 
-            "device": "$mode"
-        }
-    },
-    "access": {
-        "ip": "${ipaddrs[0]}",
-        "mac": "${macaddrs[0]}",
-        "next_hop": {
-            "ip": "${nhipaddrs[0]}",
-            "mac": "${nhmacaddrs[0]}"
-        }
-    },
-    "core": {
-        "ip": "${ipaddrs[1]}",
-        "mac": "${macaddrs[1]}",
-        "next_hop": {
-            "ip": "${nhipaddrs[1]}",
-            "mac": "${nhmacaddrs[1]}"
-        }
-    },
-    "measure": true,
-    "hwcksum": false,
-    "gtppsc": false,
-    "cpiface": {
-        "dnn": "internet",
-        "hostname": "upf",
-        "http_port": "8080",
-        "enable_notify": false,
-        "notify_sockaddr": "/tmp/notifycp",
-        "enable_ue_ip_alloc": false,
-        "ue_ip_pool": "172.250.0.0/16"
-    },
-    "slice_rate_limit_config": {
-        "n6_bps": 1000000000,
-        "n6_burst_bytes": 12500000,
-        "n3_bps": 1000000000,
-        "n3_burst_bytes": 12500000
-    },
-    "enable_end_marker": false,
-    "log_level": "trace",
-    "gtpu_only": false,
-    "p4rtc_server": "onos",
-    "p4rtc_port": "9559",
-    "access_ip": "${nhipaddrs[0]}",
-    "enable_p4rt": false
-}
-EOF
-    
-    log_success "Configuración BESS Docker generada: ${confpath}/upf.jsonc"
-}
-
-# Función principal modificada para Docker
-function setup_upf_docker() {
-    local mode="${1:-sim}"
-    
-    log_info "=== CONFIGURACIÓN UPF PARA DOCKER COMPOSE ==="
-    
-    # Configurar entorno
-    setup_docker_environment || {
-        log_error "Error configurando entorno Docker"
-        return 1
-    }
-    
-    # Configurar BESS
-    bessctl_configure_docker "$mode"
-    
-    # Mostrar resumen
-    echo -e "${GREEN}"
-    echo "=========================================="
-    echo "        CONFIGURACIÓN COMPLETADA"
-    echo "=========================================="
-    echo -e "${NC}"
-    log_success "UPF configurado para Docker Compose"
-    log_info "Modo: $mode"
-    log_info "Red Docker: $DOCKER_NETWORK"
-    log_info "Configuración: ${confpath}/upf.jsonc"
-    
-    return 0
-}
-
-# ================================================
-# FUNCIONES ORIGINALES (BARE METAL)
-# ================================================
+# Set up mirror links to communicate with the kernel
+#
+# These vdev interfaces are used for ARP + ICMP updates.
+# ARP/ICMP requests are sent via the vdev interface to the kernel.
+# ARP/ICMP responses are captured and relayed out of the dpdk ports.
 function setup_mirror_links() {
 	for ((i = 0; i < num_ifaces; i++)); do
 		sudo ip netns exec pause ip link add "${ifaces[$i]}" type veth peer name "${ifaces[$i]}"-vdev
@@ -355,6 +187,8 @@ docker run --name pause -td --restart unless-stopped \
 	-p $bessd_port:$bessd_port \
 	-p $gui_port:$gui_port \
 	-p $metrics_port:$metrics_port \
+	--net utilfiles_net5g \
+	--ip 172.18.0.2 \
 	--hostname $(hostname) \
 	k8s.gcr.io/pause
 
@@ -393,44 +227,8 @@ fi
 cd ..
 cp utilFiles/VERSION .
 
-# ================================================
-# FUNCIÓN PRINCIPAL
-# ================================================
-
-main() {
-    local mode="${1:-sim}"
-    
-    echo -e "${BLUE}"
-    echo "==============================================="
-    echo "       INICIANDO CONFIGURACIÓN UPF BESS"
-    echo "==============================================="
-    echo -e "${NC}"
-    
-	setup_upf_docker "$mode"
-        
-    local exit_code=$?
-    
-    if [ $exit_code -eq 0 ]; then
-        echo -e "${GREEN}"
-        echo "==============================================="
-        echo "     ✓ CONFIGURACIÓN COMPLETADA CON ÉXITO"
-        echo "==============================================="
-        echo -e "${NC}"
-    else
-        echo -e "${RED}"
-        echo "==============================================="
-        echo "     ✗ ERROR EN LA CONFIGURACIÓN"
-        echo "==============================================="
-        echo -e "${NC}"
-    fi
-    
-    return $exit_code
-}
-
-# Ejecutar función principal si el script se ejecuta directamente
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+# Run bessd
+docker run --name bess -td --restart unless-stopped \
 	--cpuset-cpus=0-1 \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
 	-v "$PWD/upf/conf":/opt/bess/bessctl/conf \
@@ -439,12 +237,13 @@ fi
 	$DEVICES \
 	upf-epc-bess:"$(<VERSION)" -grpc-url=0.0.0.0:$bessd_port $HUGEPAGES
 
-docker logs bess
 
 # Sleep for a couple of secs before setting up the pipeline
 sleep 10
 docker exec bess ./bessctl run up4
 sleep 10
+
+docker logs bess
 
 # Run bess-web
 docker run --name bess-web -d --restart unless-stopped \
@@ -455,7 +254,7 @@ docker run --name bess-web -d --restart unless-stopped \
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
 	--net container:pause \
-	-v "$PWD/upf/conf/upf.jsonc":/conf/upf.jsonc \
+	-v "$PWD/configs_files/docker_compose_config/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
 
