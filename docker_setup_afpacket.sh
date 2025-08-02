@@ -25,28 +25,28 @@ mode="af_packet"
 # Gateway interface(s)
 #
 # In the order of ("s1u/n3" "sgi/n6")
-ifaces=("ens803f2" "ens803f3")
+ifaces=("ens801f0" "ens801f1")
 #ifaces=("ens19")
 
 # Static IP addresses of gateway interface(s) in cidr format
 #
 # In the order of (s1u/n3 sgi/n6)
-ipaddrs=(198.18.0.1/30 198.19.0.1/30)
+ipaddrs=(198.168.0.1/24 198.168.1.1/24)
 
 # MAC addresses of gateway interface(s)
 #
 # In the order of (s1u/n3 sgi/n6)
-macaddrs=(9e:b2:d3:34:ab:27 c2:9c:55:d4:8a:f6)
+macaddrs=(b4:96:91:b4:47:b8 b4:96:91:b4:47:b9)
 
 # Static IP addresses of the neighbors of gateway interface(s)
 #
 # In the order of (n-s1u/n3 n-sgi/n6)
-nhipaddrs=(198.18.0.2 198.19.0.2)
+nhipaddrs=(198.168.0.2 198.168.1.2)
 
 # Static MAC addresses of the neighbors of gateway interface(s)
 #
 # In the order of (n-s1u/n3 n-sgi/n6)
-nhmacaddrs=(22:53:7a:15:58:50 22:53:7a:15:58:50)
+nhmacaddrs=(b4:96:91:b4:44:b0 b4:96:91:b4:44:b1)
 
 # IPv4 route table entries in cidr format per port
 #
@@ -254,7 +254,7 @@ docker run --name bess-web -d --restart unless-stopped \
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
 	--net container:pause \
-	-v "$PWD/configs_files/docker_compose_config/upf.jsonc":/conf/upf.jsonc \
+	-v "$PWD/configs_files/docker_compose_config_notsim/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
 	-config /conf/upf.jsonc
 
@@ -265,7 +265,7 @@ fi
 
 # Run bess-routectl
 docker run --name bess-routectl -td --restart unless-stopped \
-	-v "$PWD/upf/conf/route_control.py":/route_control.py \
+	-v "$PWD/configs_files/docker_compose_config_notsim/route_control.py":/route_control.py \
 	--net container:pause --pid container:bess \
 	--entrypoint /route_control.py \
 	upf-epc-bess:"$(<VERSION)" -i "${ifaces[@]}"

@@ -1,15 +1,15 @@
 networks:
-  net5g-notSIM:
+  net5g:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.19.0.0/24
-          gateway: 172.19.0.1
+        - subnet: 172.18.0.0/24
+          gateway: 172.18.0.1
 
 services:
-  amf-notsim:
+  amf:
     build: ../amf
-    container_name: amf-notsim
+    container_name: amf
     command: ["/usr/local/bin/amf", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/amfcfg.yaml:/app/config.yaml
@@ -21,15 +21,15 @@ services:
     ports:
       - "8001:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.10
+      net5g:
+        ipv4_address: 172.18.0.10
     depends_on:
       - mongodb
       - nrf
 
-  ausf-notsim:
+  ausf:
     build: ../ausf
-    container_name: ausf-notsim
+    container_name: ausf
     command: ["/usr/local/bin/ausf", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/ausfcfg.yaml:/app/config.yaml
@@ -41,15 +41,15 @@ services:
     ports:
       - "8002:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.11
+      net5g:
+        ipv4_address: 172.18.0.11
     depends_on:
       - mongodb
       - nrf
 
-  nrf-notsim:
+  nrf:
     build: ../nrf
-    container_name: nrf-notsim
+    container_name: nrf
     command: ["/usr/local/bin/nrf", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/nrfcfg.yaml:/app/config.yaml
@@ -61,14 +61,14 @@ services:
     ports:
       - "8003:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.12
+      net5g:
+        ipv4_address: 172.18.0.12
     depends_on:
       - mongodb
 
-  nssf-notsim:
+  nssf:
     build: ../nssf
-    container_name: nssf-notsim
+    container_name: nssf
     command: ["/usr/local/bin/nssf", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/test_nssf_config.yaml:/app/config.yaml
@@ -80,15 +80,15 @@ services:
     ports:
       - "8004:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.13
+      net5g:
+        ipv4_address: 172.18.0.13
     depends_on:
       - mongodb
       - nrf
 
-  pcf-notsim:
+  pcf:
     build: ../pcf
-    container_name: pcf-notsim
+    container_name: pcf
     command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/pcfcfg.yaml:/app/config.yaml
@@ -100,15 +100,15 @@ services:
     ports:
       - "8005:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.14
+      net5g:
+        ipv4_address: 172.18.0.14
     depends_on:
       - mongodb
       - nrf
 
-  smf-notsim:
+  smf:
     build: ../smf
-    container_name: smf-notsim
+    container_name: smf
     command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml", "-uerouting", "/app/uerouting.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/smfcfg.yaml:/app/config.yaml
@@ -121,15 +121,15 @@ services:
     ports:
       - "8006:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.15
+      net5g:
+        ipv4_address: 172.18.0.15
     depends_on:
       - mongodb
       - nrf
 
-  upfadapter-notsim:
+  upfadapter:
     build: ../upfadapter
-    container_name: upf-adapter-notsim
+    container_name: upf-adapter
     command: ["/usr/local/bin/upfadapter"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/upfadapter.yaml:/app/config.yaml
@@ -141,12 +141,12 @@ services:
     ports:
       - "8009:8090"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.21
+      net5g:
+        ipv4_address: 172.18.0.21
 
-  udm-notsim:
+  udm:
     build: ../udm
-    container_name: udm-notsim
+    container_name: udm
     command: ["/usr/local/bin/udm", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/udmcfg.yaml:/app/config.yaml
@@ -158,15 +158,15 @@ services:
     ports:
       - "8007:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.16
+      net5g:
+        ipv4_address: 172.18.0.16
     depends_on:
       - mongodb
       - nrf
 
-  udr-notsim:
+  udr:
     build: ../udr
-    container_name: udr-notsim
+    container_name: udr
     command: ["/usr/local/bin/udr", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/udr_config.yaml:/app/config.yaml
@@ -178,15 +178,15 @@ services:
     ports:
       - "8008:8000"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.17
+      net5g:
+        ipv4_address: 172.18.0.17
     depends_on:
       - mongodb
       - nrf
 
-  webui-notsim:
+  webui:
     build: ../webconsole
-    container_name: webui-notsim
+    container_name: webui
     command: ["/usr/local/bin/webconsole-ui", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/webuicfg.yaml:/app/config.yaml
@@ -199,46 +199,46 @@ services:
       - "5000:5000"
       - "5001:5001"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.18
+      net5g:
+        ipv4_address: 172.18.0.18
     depends_on:
       - mongodb
 
-  sctplb-notsim:
+  sctplb:
     build: ../sctplb
-    container_name: sctplb-notsim
+    container_name: sctplb
     command: ["/usr/local/bin/sctplb", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/sctplb.yaml:/app/config.yaml
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.19
+      net5g:
+        ipv4_address: 172.18.0.19
   
-  gnbsim-notsim:
+  gnbsim:
     build: ../gnbsim
-    container_name: gnbsim-notsim
+    container_name: gnbsim
     command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
     volumes:
       - ../configs_files/docker_compose_config_notsim/gnbsim.yaml:/app/config.yaml
     ports:
       - "8083:8080"
     networks:
-      - net5g-notSIM
+      - net5g
     depends_on:
       - sctplb
 
-  nettools-notsim:
+  nettools:
     image: nicolaka/netshoot:latest
-    container_name: nettools-notsim
+    container_name: nettools
     command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.22
+      net5g:
+        ipv4_address: 172.18.0.22
     # Herramientas de red para testeo interno
 
-  mongodb-notsim:
+  mongodb:
     image: mongo:latest
-    container_name: mongodb-notsim
+    container_name: mongodb
     restart: unless-stopped
     command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
@@ -254,24 +254,24 @@ services:
     environment:
       MONGO_INITDB_DATABASE: admin
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.30
+      net5g:
+        ipv4_address: 172.18.0.30
 
-  mongo-setup-notsim:
+  mongo-setup:
     image: mongo:latest
-    container_name: mongo-setup-notsim
+    container_name: mongo-setup
     depends_on:
       - mongodb
     volumes:
       - ./mongo-setup.sh:/mongo-setup.sh
     entrypoint: ["bash", "/mongo-setup.sh"]
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.31
+      net5g:
+        ipv4_address: 172.18.0.31
 
-  kafka-notsim:
+  kafka:
     image: bitnami/kafka:latest
-    container_name: kafka-notsim
+    container_name: kafka
     restart: unless-stopped
     environment:
       KAFKA_BROKER_ID: 1
@@ -286,26 +286,26 @@ services:
     ports:
       - "9092:9092"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.40
+      net5g:
+        ipv4_address: 172.18.0.40
     depends_on:
       - zookeeper
 
-  zookeeper-notsim:
+  zookeeper:
     image: bitnami/zookeeper:latest
-    container_name: zookeeper-notsim
+    container_name: zookeeper
     restart: unless-stopped
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
     ports:
       - "2181:2181"
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.41
+      net5g:
+        ipv4_address: 172.18.0.41
 
-  mongo-express-notsim:
+  mongo-express:
     image: mongo-express:latest
-    container_name: mongo-express-notsim
+    container_name: mongo-express
     restart: unless-stopped
     ports:
       - "8081:8081"
@@ -320,7 +320,7 @@ services:
       - mongodb
       - mongo-setup
     networks:
-      net5g-notSIM:
-        ipv4_address: 172.19.0.32
+      net5g:
+        ipv4_address: 172.18.0.32
 volumes:
-  kafka_data-notsim:
+  kafka_data:
