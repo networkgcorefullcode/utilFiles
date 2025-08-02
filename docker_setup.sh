@@ -232,6 +232,7 @@ docker run --name bess -td --restart unless-stopped \
 	--ulimit memlock=-1 -v /dev/hugepages:/dev/hugepages \
 	-v "$PWD/upf/conf":/opt/bess/bessctl/conf \
 	--net container:pause \
+	--ip 172.18.0.50 \
 	$PRIVS \
 	$DEVICES \
 	upf-epc-bess:"$(<VERSION)" -grpc-url=0.0.0.0:$bessd_port $HUGEPAGES
@@ -247,15 +248,18 @@ docker logs bess
 # Run bess-web
 docker run --name bess-web -d --restart unless-stopped \
 	--net container:bess \
+	--ip 172.18.0.51 \
 	--entrypoint bessctl \
 	upf-epc-bess:"$(<VERSION)" http 0.0.0.0 $gui_port
 
 # Run bess-pfcpiface depending on mode type
 docker run --name bess-pfcpiface -td --restart on-failure \
 	--net container:pause \
+	--ip 172.18.0.52 \
 	-v "$PWD/upf/conf/upf.jsonc":/conf/upf.jsonc \
 	upf-epc-pfcpiface:"$(<VERSION)" \
-	-config /conf/upf.jsonc
+	-config /conf/upf.jsonc \
+	-bess 172.18.0.50:10514
 
 # Don't run any other container if mode is "sim"
 if [ "$mode" == 'sim' ]; then
