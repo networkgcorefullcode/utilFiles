@@ -187,6 +187,7 @@ docker run --name pause -td --restart unless-stopped \
 	-p $bessd_port:$bessd_port \
 	-p $gui_port:$gui_port \
 	-p $metrics_port:$metrics_port \
+	--net utilFiles_net5g \
 	--hostname $(hostname) \
 	k8s.gcr.io/pause
 

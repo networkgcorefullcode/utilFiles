@@ -1,6 +1,10 @@
 networks:
   net5g:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+          gateway: 172.18.0.1
 
 services:
   amf:
@@ -17,7 +21,8 @@ services:
     ports:
       - "8001:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.10
     depends_on:
       - mongodb
       - nrf
@@ -36,7 +41,8 @@ services:
     ports:
       - "8002:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.11
     depends_on:
       - mongodb
       - nrf
@@ -55,7 +61,8 @@ services:
     ports:
       - "8003:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.12
     depends_on:
       - mongodb
 
@@ -73,7 +80,8 @@ services:
     ports:
       - "8004:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.13
     depends_on:
       - mongodb
       - nrf
@@ -92,7 +100,8 @@ services:
     ports:
       - "8005:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.14
     depends_on:
       - mongodb
       - nrf
@@ -112,7 +121,8 @@ services:
     ports:
       - "8006:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.15
     depends_on:
       - mongodb
       - nrf
@@ -131,7 +141,8 @@ services:
     ports:
       - "8007:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.16
     depends_on:
       - mongodb
       - nrf
@@ -150,7 +161,8 @@ services:
     ports:
       - "8008:8000"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.17
     depends_on:
       - mongodb
       - nrf
@@ -170,7 +182,8 @@ services:
       - "5000:5000"
       - "5001:5001"
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.18
     depends_on:
       - mongodb
 
@@ -181,7 +194,8 @@ services:
     volumes:
       - ../configs_files/docker_compose_config/sctplb.yaml:/app/config.yaml
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.19
   
   # gnbsim:
   #   build: ../gnbsim
@@ -201,7 +215,8 @@ services:
     container_name: nettools
     command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.20
     # Herramientas de red para testeo interno
 
   mongodb:
@@ -222,7 +237,8 @@ services:
     environment:
       MONGO_INITDB_DATABASE: admin
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.30
 
   mongo-setup:
     image: mongo:latest
@@ -233,7 +249,8 @@ services:
       - ./mongo-setup.sh:/mongo-setup.sh
     entrypoint: ["bash", "/mongo-setup.sh"]
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.31
 
   mongo-express:
     image: mongo-express:latest
@@ -252,4 +269,5 @@ services:
       - mongodb
       - mongo-setup
     networks:
-      - net5g
+      net5g:
+        ipv4_address: 172.18.0.32
