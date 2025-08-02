@@ -128,7 +128,7 @@ services:
       - nrf
 
   upf-adapter:
-    build: ../upf-adapter
+    build: ../upfadapter
     container_name: upf-adapter
     command: ["/usr/local/bin/upf-adapter"]
     volumes:
