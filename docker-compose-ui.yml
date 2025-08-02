@@ -127,6 +127,23 @@ services:
       - mongodb
       - nrf
 
+  upf-adapter:
+    build: ../upf-adapter
+    container_name: upf-adapter
+    command: ["/usr/local/bin/upf-adapter"]
+    volumes:
+      - ../configs_files/docker_compose_config/upf-adapter.yaml:/app/config.yaml
+      - ./certs/upf-adapter.crt:/var/run/certs/upf-adapter.crt:ro
+      - ./certs/upf-adapter.key:/var/run/certs/upf-adapter.key:ro
+      - ./certs/tls.crt:/var/run/certs/tls.crt:ro
+      - ./certs/tls.key:/var/run/certs/tls.key:ro
+      - ./certs/ca.crt:/var/run/certs/ca.crt:ro
+    ports:
+      - "8009:8090"
+    networks:
+      net5g:
+        ipv4_address: 172.18.0.21
+
   udm:
     build: ../udm
     container_name: udm
@@ -216,7 +233,7 @@ services:
     command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
       net5g:
-        ipv4_address: 172.18.0.20
+        ipv4_address: 1
     # Herramientas de red para testeo interno
 
   mongodb:
