@@ -233,7 +233,7 @@ services:
     command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
     networks:
       net5g:
-        ipv4_address: 1
+        ipv4_address: 172.18.0.22
     # Herramientas de red para testeo interno
 
   mongodb:
