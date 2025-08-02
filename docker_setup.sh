@@ -188,6 +188,7 @@ docker run --name pause -td --restart unless-stopped \
 	-p $gui_port:$gui_port \
 	-p $metrics_port:$metrics_port \
 	--net utilfiles_net5g \
+	--ip 172.18.0.2 \
 	--hostname $(hostname) \
 	k8s.gcr.io/pause
 
