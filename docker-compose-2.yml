@@ -27,7 +27,7 @@ services:
       - mongodb
       - nrf
     environment:
-      - MANAGED_BY_CONFIG_POD="true"
+      - MANAGED_BY_CONFIG_POD: "true"
 
   ausf:
     build: ../ausf
