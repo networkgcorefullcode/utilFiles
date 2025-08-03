@@ -204,15 +204,15 @@ services:
     depends_on:
       - mongodb
 
-  sctplb:
-    build: ../sctplb
-    container_name: sctplb
-    command: ["/usr/local/bin/sctplb", "--cfg", "/app/config.yaml"]
-    volumes:
-      - ../configs_files/docker_compose_config_notsim/sctplb.yaml:/app/config.yaml
-    networks:
-      net5g:
-        ipv4_address: 172.18.0.19
+  # sctplb:
+  #   build: ../sctplb
+  #   container_name: sctplb
+  #   command: ["/usr/local/bin/sctplb", "--cfg", "/app/config.yaml"]
+  #   volumes:
+  #     - ../configs_files/docker_compose_config_notsim/sctplb.yaml:/app/config.yaml
+  #   networks:
+  #     net5g:
+  #       ipv4_address: 172.18.0.19
   
   gnbsim:
     build: ../gnbsim
@@ -269,39 +269,39 @@ services:
       net5g:
         ipv4_address: 172.18.0.31
 
-  kafka:
-    image: bitnami/kafka:latest
-    container_name: kafka
-    restart: unless-stopped
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
-      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_CFG_PROCESS_ROLES: broker
-      KAFKA_CFG_NODE_ID: 1
-    volumes:
-      - kafka_data:/bitnami/kafka
-    ports:
-      - "9092:9092"
-    networks:
-      net5g:
-        ipv4_address: 172.18.0.40
-    depends_on:
-      - zookeeper
+  # kafka:
+  #   image: bitnami/kafka:latest
+  #   container_name: kafka
+  #   restart: unless-stopped
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+  #     KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+  #     KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     ALLOW_PLAINTEXT_LISTENER: "yes"
+  #     KAFKA_CFG_PROCESS_ROLES: broker
+  #     KAFKA_CFG_NODE_ID: 1
+  #   volumes:
+  #     - kafka_data:/bitnami/kafka
+  #   ports:
+  #     - "9092:9092"
+  #   networks:
+  #     net5g:
+  #       ipv4_address: 172.18.0.40
+  #   depends_on:
+  #     - zookeeper
 
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    container_name: zookeeper
-    restart: unless-stopped
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-    ports:
-      - "2181:2181"
-    networks:
-      net5g:
-        ipv4_address: 172.18.0.41
+  # zookeeper:
+  #   image: bitnami/zookeeper:latest
+  #   container_name: zookeeper
+  #   restart: unless-stopped
+  #   environment:
+  #     ALLOW_ANONYMOUS_LOGIN: "yes"
+  #   ports:
+  #     - "2181:2181"
+  #   networks:
+  #     net5g:
+  #       ipv4_address: 172.18.0.41
 
   mongo-express:
     image: mongo-express:latest
