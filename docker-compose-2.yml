@@ -26,6 +26,8 @@ services:
     depends_on:
       - mongodb
       - nrf
+    environment:
+      - MANAGED_BY_CONFIG_POD="true"
 
   ausf:
     build: ../ausf
