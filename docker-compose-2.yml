@@ -225,7 +225,8 @@ services:
     networks:
       - net5g
     depends_on:
-      - sctplb
+      - amf
+    restart: unless-stopped
 
   nettools:
     image: nicolaka/netshoot:latest
