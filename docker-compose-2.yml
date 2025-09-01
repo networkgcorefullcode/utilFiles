@@ -21,6 +21,7 @@ services:
     depends_on:
       - mongodb
       - nrf
+      - webui
     environment:
       - MANAGED_BY_CONFIG_POD: "true"
 
@@ -38,6 +39,7 @@ services:
     depends_on:
       - mongodb
       - nrf
+      - webui
 
   nrf:
     build: ../nrf
@@ -52,6 +54,7 @@ services:
         ipv4_address: 172.18.0.12
     depends_on:
       - mongodb
+      - webui
 
   simapp:
     build: ../simapp
