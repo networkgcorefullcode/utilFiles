@@ -12,7 +12,7 @@ services:
     container_name: amf
     command: ["/usr/local/bin/amf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/amfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/amfcfg.yaml:/app/config.yaml
     ports:
       - "8001:8000"
     networks:
@@ -30,7 +30,7 @@ services:
     container_name: ausf
     command: ["/usr/local/bin/ausf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/ausfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/ausfcfg.yaml:/app/config.yaml
     ports:
       - "8002:8000"
     networks:
@@ -46,7 +46,7 @@ services:
     container_name: nrf
     command: ["/usr/local/bin/nrf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/nrfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/nrfcfg.yaml:/app/config.yaml
     ports:
       - "8003:8000"
     networks:
@@ -61,7 +61,7 @@ services:
     container_name: simapp
     command: ["/usr/local/bin/simapp", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/simapp.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/simapp.yaml:/app/config.yaml
     ports:
       - "8010:8000"
     networks:
@@ -76,7 +76,7 @@ services:
     container_name: nssf
     command: ["/usr/local/bin/nssf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/test_nssf_config.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/test_nssf_config.yaml:/app/config.yaml
     ports:
       - "8004:8000"
     networks:
@@ -92,7 +92,7 @@ services:
     container_name: pcf
     command: ["/usr/local/bin/pcf", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/pcfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/pcfcfg.yaml:/app/config.yaml
     ports:
       - "8005:8000"
     networks:
@@ -108,8 +108,8 @@ services:
     container_name: smf
     command: ["/usr/local/bin/smf", "--cfg", "/app/config.yaml", "-uerouting", "/app/uerouting.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/smfcfg.yaml:/app/config.yaml
-      - ../configs_files/docker_compose_config_notsim/uerouting.yaml:/app/uerouting.yaml
+      - ../configs_files/docker_compose_config_notsimv2/smfcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/uerouting.yaml:/app/uerouting.yaml
     ports:
       - "8006:8000"
     networks:
@@ -125,7 +125,7 @@ services:
     container_name: upf-adapter
     command: ["/usr/local/bin/upfadapter"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/upfadapter.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/upfadapter.yaml:/app/config.yaml
     ports:
       - "8009:8090"
     networks:
@@ -137,7 +137,7 @@ services:
     container_name: udm
     command: ["/usr/local/bin/udm", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/udmcfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/udmcfg.yaml:/app/config.yaml
     ports:
       - "8007:8000"
     networks:
@@ -153,7 +153,7 @@ services:
     container_name: udr
     command: ["/usr/local/bin/udr", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/udr_config.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/udr_config.yaml:/app/config.yaml
     ports:
       - "8008:8000"
     networks:
@@ -169,7 +169,7 @@ services:
     container_name: webui
     command: ["/usr/local/bin/webconsole-ui", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/webuicfg.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/webuicfg.yaml:/app/config.yaml
     ports:
       - "5000:5000"
       - "5001:5001"
@@ -184,7 +184,7 @@ services:
     container_name: gnbsim
     command: ["/usr/local/bin/gnbsim", "--cfg", "/app/config.yaml"]
     volumes:
-      - ../configs_files/docker_compose_config_notsim/gnbsim.yaml:/app/config.yaml
+      - ../configs_files/docker_compose_config_notsimv2/gnbsim.yaml:/app/config.yaml
     ports:
       - "8083:8080"
     networks:
