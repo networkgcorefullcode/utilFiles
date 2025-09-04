@@ -49,7 +49,7 @@ services:
     image: mongo:latest
     container_name: mongo-setup
     depends_on:
-      - mongo1
+      - mongodb
       - mongo2
       - mongo3
     volumes:
@@ -77,4 +77,4 @@ services:
       - mongo-setup
     networks:
       net5g:
-        ipv4_address: 172.18.0.32
+        ipv4_address: 172.18.0.34
