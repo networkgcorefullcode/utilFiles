@@ -59,6 +59,12 @@ and if not cloned then clone them`,
 		}
 
 		fmt.Println("Changed directory to:", repoDir)
+
+		err = cloneRepo(githubUser, githubToken)
+		if err != nil {
+			fmt.Println("Error cloning repositories:", err)
+			return
+		}
 	},
 }
 
