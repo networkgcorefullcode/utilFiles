@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -90,9 +91,11 @@ func cloneRepo(gituser, gittoken string) error {
 		fmt.Println("Error decoding response:", err)
 		return err
 	}
-
+	waitGroup := sync.WaitGroup{}
 	for _, repo := range repos {
+		waitGroup.Add(1)
 		go func() {
+			defer waitGroup.Done()
 			fmt.Printf("Cloning %s...\n", repo.CloneURL)
 			if githubUser != "" && githubToken != "" {
 				authURL := fmt.Sprintf("https://%s:%s@%s", gituser, gittoken, repo.CloneURL[8:])
@@ -113,5 +116,8 @@ func cloneRepo(gituser, gittoken string) error {
 			fmt.Printf("Successfully cloned %s\n", repo.CloneURL)
 		}()
 	}
+
+	waitGroup.Wait()
+	fmt.Println("All repositories processed.")
 	return nil
 }
