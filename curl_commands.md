@@ -49,3 +49,17 @@ Invoke-RestMethod -Method Put -Uri "http://192.168.12.16:5000/api/k4opt/1" `
 # Eliminar una clave k4
 Invoke-RestMethod -Method Delete -Uri "http://192.168.12.16:5000/api/k4opt/1"
 ```
+
+```bash
+# Crear un nuevo suscriptor con datos de autenticacion
+curl -X POST http://192.168.12.16:5000/api/subscriber/<ueId_IMSI> \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plmnID": "12345",
+    "opc": "abc123",
+    "key": "def456",
+    "sequenceNumber": "1",
+    "k4_sno": 1,
+    "encryptionAlgorithm": 1
+  }'
+```
