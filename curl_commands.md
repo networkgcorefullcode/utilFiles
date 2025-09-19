@@ -17,6 +17,13 @@ curl -X POST http://192.168.12.16:5000/api/k4opt \
     "k4_sno": 1
   }'
 
+curl -X POST http://192.168.12.16:30001/api/k4opt \
+  -H "Content-Type: application/json" \
+  -d '{
+    "k4": "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+    "k4_sno": 1
+  }'
+
 # Actualizar una clave k4
 curl -X PUT http://192.168.12.16:5000/api/k4opt/1 \
   -H "Content-Type: application/json" \
@@ -59,6 +66,17 @@ curl -X POST http://192.168.12.16:5000/api/subscriber/<ueId_IMSI> \
     "opc": "abc123",
     "key": "def456",
     "sequenceNumber": "1",
+    "k4_sno": 1,
+    "encryptionAlgorithm": 1
+  }'
+
+curl -X POST http://192.168.12.16:30001/api/subscriber/imsi-208930100007595 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plmnID": "20893",
+    "opc": "981d464c7c52eb6e5036234984ad0bcf",
+    "key": "DC1D1221FA595EBE23E93399D48CBEBF",
+    "sequenceNumber": "16f3b3f70fc2",
     "k4_sno": 1,
     "encryptionAlgorithm": 1
   }'
